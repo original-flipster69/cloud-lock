@@ -54,13 +54,16 @@ jobs:
   code-security:
     name: Checking Code Security with Snyk
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@master
-      - name: Run Snyk to check for code vulnerabilities
-        uses: snyk/actions/maven@master
+      - uses: actions/checkout@v3
+      - name: Set up Node 14
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14
+      - name: install Snyk CLI
+        run: npm install -g snyk
+      - name: Run Snyk to check for vulnerable dependencies
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          command: code test
+        run: snyk code test
 
