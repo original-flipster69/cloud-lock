@@ -19,6 +19,17 @@
             <artifactId>google-cloud-storage</artifactId>
             <version>2.19.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-storage-blob</artifactId>
+            <version>12.20.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-identity</artifactId>
+            <version>1.8.0</version>
+        </dependency>
     </dependencies>
 
 </project>
