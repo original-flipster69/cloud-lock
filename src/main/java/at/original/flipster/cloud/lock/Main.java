@@ -4,25 +4,21 @@ public class Main {
 
     public static void main(String[] args) {
 
-        final String mode = "gcp";
-        System.out.println("locking with: " + mode);
+        final Vendor vendor = Vendor.GCP;
+        System.out.println("locking with: " + vendor);
 
                 Runnable r =
                 () -> {
-                    var provider = "gcp".equals(mode) ? new GoogleCloudStorage("tyler-lockett", "leader.txt") : new AzureBlobStorage("tylerlockett", "leader.txt");
-                    var lock = new CloudLock(provider);
                     try {
                         Thread.sleep((long) (Math.random() * 1000));
                     } catch(Throwable t) {
                         // ignored
                     }
-                    lock.acquireLock();
-                    try {
+                    new LeaderOnlyExecution().onlyExecuteAsLeader(() -> {try {
                         Thread.sleep((long) (Math.random() * 1000));
                     } catch(Throwable t) {
                         // ignored
-                    }
-                    lock.releaseLock();
+                    }}, vendor);
                 };
 
         for (int i = 0; i < 10; i++) {
