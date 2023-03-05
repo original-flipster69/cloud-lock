@@ -10,87 +10,82 @@ import com.azure.storage.blob.BlobServiceClientBuilder;
 import com.azure.storage.blob.models.BlobStorageException;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
-import static java.time.temporal.ChronoUnit.MINUTES;
-import static java.time.temporal.ChronoUnit.SECONDS;
+public class AzureBlobStorage implements ProviderLock {
 
-public class AzureBlobStorage implements CloudLock{
-
-    private static final String CONTAINER_NAME = "tylerlockett";
-    private static final String FILE = "leader.txt";
-
-    private static final long LIFETIME_MINUTES = 1L;
-    private static final long HEARTBEAT_SECONDS = 5L;
-
+    private final String containerName;
+    private final String lockFile;
     private final DefaultAzureCredential defaultCredential = new DefaultAzureCredentialBuilder().build();
 
-    private AzureLock lock = null;
+    private Lock<Void> lock = null;
 
-    public void acquireLock() {
-        BlobServiceClient blobServiceClient = new BlobServiceClientBuilder()
-                .endpoint("https://tylerlockett.blob.core.windows.net/")
-                .credential(defaultCredential)
-                .buildClient();
+    private BlobServiceClient serviceClient;
+    private BlobContainerClient containerClient;
+    private BlobClient blobClient;
 
-                //FIXME create if not exists
-        BlobContainerClient blobContainerClient = blobServiceClient.getBlobContainerClient(CONTAINER_NAME);
-        BlobClient blobClient = blobContainerClient.getBlobClient(FILE);
-        if(!blobClient.exists()) {
-            try {
-                blobClient.upload(BinaryData.fromString(LocalDateTime.now().toString()), false);
-            } catch(BlobStorageException bse) {
-                return;
-            }
-            lock = new AzureLock();
-            System.out.println("acquired lock!!!");
-            return;
-        }
-
-        String content = null;
-        content = new String(blobClient.downloadContent().toBytes());
-        var lockTime = LocalDateTime.parse(content);
-
-        var minutesBetween = MINUTES.between(lockTime, LocalDateTime.now());
-
-        if (minutesBetween > LIFETIME_MINUTES) {
-            blobClient.delete();
-            try {
-                blobClient.upload(BinaryData.fromString(LocalDateTime.now().toString()));
-            } catch (BlobStorageException bse) {
-                return;
-            }
-            lock = new AzureLock();
-            System.out.println("acquired lock via timeout!");
-            return;
-        }
-        //System.out.println("no lock for now...");
+    public AzureBlobStorage(final String containerName, final String lockFile){
+        this.containerName = Objects.requireNonNull(containerName);
+        this.lockFile = Objects.requireNonNull(lockFile);
     }
 
-    public void releaseLock() {
-        if (lock == null) {
-            return;
+    private BlobServiceClient getServiceClient() {
+        if (serviceClient == null) {
+            serviceClient = new BlobServiceClientBuilder()
+                    .endpoint("https://tylerlockett.blob.core.windows.net/")
+                    .credential(defaultCredential)
+                    .buildClient();
         }
-        BlobServiceClient blobServiceClient = new BlobServiceClientBuilder()
-                .endpoint("https://tylerlockett.blob.core.windows.net/")
-                .credential(defaultCredential)
-                .buildClient();
+        return serviceClient;
+    }
 
-        BlobContainerClient blobContainerClient = blobServiceClient.getBlobContainerClient(CONTAINER_NAME);
-        BlobClient blobClient = blobContainerClient.getBlobClient(FILE);
-        String content = new String(blobClient.downloadContent().toBytes());
-
-        var lockTime = LocalDateTime.parse(content);
-        if(!LocalDateTime.now().isAfter(lockTime.plus(HEARTBEAT_SECONDS, SECONDS))) {
-            System.out.println("waiting...");
-            try {
-                //FIXME schedule the release instead?
-                Thread.sleep(HEARTBEAT_SECONDS * 1000);
-            } catch(Throwable t) {
-                //
-            }
+    private BlobContainerClient getContainerClient() {
+        if (containerClient == null) {
+            containerClient = getServiceClient().getBlobContainerClient(containerName);
         }
-        blobClient.delete();
-        System.out.println("released lock");
+        return containerClient;
+    }
+
+    private BlobClient getBlobClient() {
+        if (blobClient == null) {
+            blobClient = getContainerClient().getBlobClient(lockFile);
+        }
+        return blobClient;
+    }
+
+    @Override
+    public boolean lockFileExists() {
+        return getBlobClient().exists();
+    }
+
+    @Override
+    public boolean lock() {
+        try {
+            getBlobClient().upload(BinaryData.fromString(LocalDateTime.now().toString()), false);
+            lock = new Lock<>(null, LocalDateTime.now());
+        } catch (BlobStorageException bse) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String getLockContent() {
+        return new String(getBlobClient().downloadContent().toBytes());
+    }
+
+    @Override
+    public boolean hasLock() {
+        return lock != null;
+    }
+
+    @Override
+    public void deleteLock() {
+        getBlobClient().delete();
+    }
+
+    @Override
+    public void unlock() {
         lock = null;
     }
 }
