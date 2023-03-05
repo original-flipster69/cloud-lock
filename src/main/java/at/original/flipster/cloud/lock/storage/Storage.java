@@ -1,4 +1,4 @@
-package at.original.flipster.cloud.lock;
+package at.original.flipster.cloud.lock.storage;
 
 public interface Storage {
     boolean lockFileExists();

@@ -1,4 +1,4 @@
-package at.original.flipster.cloud.lock;
+package at.original.flipster.cloud.lock.storage;
 
 import com.azure.core.util.BinaryData;
 import com.azure.identity.DefaultAzureCredential;
@@ -12,7 +12,7 @@ import com.azure.storage.blob.models.BlobStorageException;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-public class AzureBlobStorage implements Storage {
+class AzureBlobStorage implements Storage {
 
     private final String containerName;
     private final String lockFile;
@@ -24,7 +24,7 @@ public class AzureBlobStorage implements Storage {
     private BlobContainerClient containerClient;
     private BlobClient blobClient;
 
-    public AzureBlobStorage(final String containerName, final String lockFile){
+    AzureBlobStorage(final String containerName, final String lockFile){
         this.containerName = Objects.requireNonNull(containerName);
         this.lockFile = Objects.requireNonNull(lockFile);
     }

@@ -1,65 +1,29 @@
 package at.original.flipster.cloud.lock;
 
-import java.time.LocalDateTime;
-import java.util.Objects;
+import at.original.flipster.cloud.lock.storage.StorageFactory;
+import at.original.flipster.cloud.lock.storage.Vendor;
 
-import static java.time.temporal.ChronoUnit.MINUTES;
-import static java.time.temporal.ChronoUnit.SECONDS;
+import java.util.Objects;
 
 public final class CloudLock {
 
-    private static final long LIFETIME_MINUTES = 1L;
-    private static final long HEARTBEAT_SECONDS = 5L;
+    private final Vendor vendor;
+    private final String bucketName;
+    private final String lockFile;
 
-    private final Storage providerLock;
-
-    public CloudLock(final Storage cloudLock) {
-        this.providerLock = Objects.requireNonNull(cloudLock);
+    public CloudLock(final Vendor vendor, final String bucketName, final String lockFile) {
+        this.vendor = Objects.requireNonNull(vendor);
+        this.bucketName = Objects.requireNonNull(bucketName);
+        this.lockFile = Objects.requireNonNull(lockFile);
     }
 
-    public boolean acquireLock() {
-        if (!providerLock.lockFileExists()) {
-            var gotLock = providerLock.lock();
-            if (!gotLock) {
-                return false;
-            }
-            System.out.println("acquired lock");
-            return true;
-        }
-
-        LocalDateTime lockTime = LocalDateTime.parse(providerLock.getLockContent());
-        var minutesBetween = MINUTES.between(lockTime, LocalDateTime.now());
-
-        if (minutesBetween > LIFETIME_MINUTES) {
-            //FIXME check necessity
-            providerLock.deleteLock();
-            boolean gotLock = providerLock.lock();
-            if (!gotLock) {
-                return false;
-            }
-            System.out.println("acquired lock");
-            return true;
-        }
-        return false;
-    }
-
-    public void releaseLock() {
-        if(!providerLock.hasLock()) {
-            //FIXME oder fehler?
+    public void doOnlyAsLeader(final Runnable action) {
+        StorageLock storageLock = new StorageLock(new StorageFactory(bucketName, lockFile).storage(vendor));
+        boolean haveLock = storageLock.acquireLock();
+        if (!haveLock) {
             return;
         }
-        LocalDateTime lockTime = LocalDateTime.parse(providerLock.getLockContent());
-        if(!LocalDateTime.now().isAfter(lockTime.plus(HEARTBEAT_SECONDS, SECONDS))) {
-            System.out.println("waiting...");
-            try {
-                //FIXME schedule the release instead?
-                Thread.sleep(HEARTBEAT_SECONDS * 1000);
-            } catch(Throwable t) {
-                //
-            }
-        }
-        providerLock.deleteLock();
-        System.out.println("released lock");
-        providerLock.unlock();
+        action.run();
+        storageLock.releaseLock();
     }
 }

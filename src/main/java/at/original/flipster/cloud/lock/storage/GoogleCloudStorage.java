@@ -1,4 +1,4 @@
-package at.original.flipster.cloud.lock;
+package at.original.flipster.cloud.lock.storage;
 
 
 import com.google.cloud.storage.*;
@@ -7,7 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-public final class GoogleCloudStorage implements Storage {
+final class GoogleCloudStorage implements Storage {
 
     private final String bucketName;
     private final String lockFile;
@@ -18,7 +18,7 @@ public final class GoogleCloudStorage implements Storage {
     private Bucket bucket;
     private Blob blob;
 
-    public GoogleCloudStorage(final String bucketName, final String lockFile) {
+    GoogleCloudStorage(final String bucketName, final String lockFile) {
         this.bucketName = Objects.requireNonNull(bucketName);
         this.lockFile = Objects.requireNonNull(lockFile);
     }
