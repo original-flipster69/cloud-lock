@@ -7,14 +7,14 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-public final class GoogleCloudStorage implements ProviderLock {
+public final class GoogleCloudStorage implements Storage {
 
     private final String bucketName;
     private final String lockFile;
 
     private Lock<BlobId> lock = null;
 
-    private Storage storage;
+    private com.google.cloud.storage.Storage storage;
     private Bucket bucket;
     private Blob blob;
 
@@ -53,7 +53,7 @@ public final class GoogleCloudStorage implements ProviderLock {
         return blob;
     }
 
-    private Storage getStorage() {
+    private com.google.cloud.storage.Storage getStorage() {
         if (storage == null) {
             storage = StorageOptions.getDefaultInstance().getService();
         }

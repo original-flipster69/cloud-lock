@@ -6,24 +6,25 @@ import java.util.Objects;
 import static java.time.temporal.ChronoUnit.MINUTES;
 import static java.time.temporal.ChronoUnit.SECONDS;
 
-public class CloudLock {
+public final class CloudLock {
 
     private static final long LIFETIME_MINUTES = 1L;
     private static final long HEARTBEAT_SECONDS = 5L;
 
-    private final ProviderLock providerLock;
+    private final Storage providerLock;
 
-    public CloudLock(final ProviderLock cloudLock) {
+    public CloudLock(final Storage cloudLock) {
         this.providerLock = Objects.requireNonNull(cloudLock);
     }
 
-    public void acquireLock() {
+    public boolean acquireLock() {
         if (!providerLock.lockFileExists()) {
             var gotLock = providerLock.lock();
             if (!gotLock) {
-                return;
+                return false;
             }
             System.out.println("acquired lock");
+            return true;
         }
 
         LocalDateTime lockTime = LocalDateTime.parse(providerLock.getLockContent());
@@ -34,10 +35,12 @@ public class CloudLock {
             providerLock.deleteLock();
             boolean gotLock = providerLock.lock();
             if (!gotLock) {
-                return;
+                return false;
             }
             System.out.println("acquired lock");
+            return true;
         }
+        return false;
     }
 
     public void releaseLock() {

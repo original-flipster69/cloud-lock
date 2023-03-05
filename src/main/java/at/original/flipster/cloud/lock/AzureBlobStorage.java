@@ -12,7 +12,7 @@ import com.azure.storage.blob.models.BlobStorageException;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-public class AzureBlobStorage implements ProviderLock {
+public class AzureBlobStorage implements Storage {
 
     private final String containerName;
     private final String lockFile;
