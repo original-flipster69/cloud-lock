@@ -8,14 +8,19 @@ public class Main {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
+    //private static final String ENDPOINT = "https://tylerlockett.blob.core.windows.net/";
+    private static final String ENDPOINT = "https://oss-eu-central-1.aliyuncs.com";
     private static final String BUCKET = "tyler-lockett";
     private static final String FILE = "leader.txt";
 
     public static void main(String[] args) {
 
-        final Vendor vendor = Vendor.AZURE;
+        final String accessId = System.getenv("ACCESS_ID");
+        final String accessKey = System.getenv("ACCESS_KEY");
+
+        final Vendor vendor = Vendor.ALIBABA;
         LOGGER.info("logging with {}", vendor);
-        CloudLock cloudlock = new CloudLock(vendor, BUCKET, FILE);
+        CloudLock cloudlock = new CloudLock(vendor, new Config(BUCKET, FILE, ENDPOINT, accessId, accessKey));
 
         Runnable r =
                 () -> {
@@ -27,6 +32,7 @@ public class Main {
                     cloudlock.doIfLeader(() -> {
                         try {
                             Thread.sleep((long) (Math.random() * 1000));
+                            System.out.println("pipsi pipsi puuuuuuu");
                         } catch (Throwable t) {
                             // ignored
                         }

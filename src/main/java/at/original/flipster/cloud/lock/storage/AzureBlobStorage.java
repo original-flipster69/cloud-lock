@@ -20,6 +20,7 @@ final class AzureBlobStorage implements CloudStorage {
 
     private final String containerName;
     private final String lockFile;
+    private final String endpoint;
     private final DefaultAzureCredential defaultCredential = new DefaultAzureCredentialBuilder().build();
 
     private Lock<Void> lock = null;
@@ -28,16 +29,16 @@ final class AzureBlobStorage implements CloudStorage {
     private BlobContainerClient containerClient;
     private BlobClient blobClient;
 
-    AzureBlobStorage(final String containerName, final String lockFile){
+    AzureBlobStorage(final String containerName, final String lockFile, final String endpoint){
         this.containerName = Objects.requireNonNull(containerName);
         this.lockFile = Objects.requireNonNull(lockFile);
+        this.endpoint = Objects.requireNonNull(endpoint);
     }
 
     private BlobServiceClient getServiceClient() {
         if (serviceClient == null) {
             serviceClient = new BlobServiceClientBuilder()
-                    //FIXME endpoint
-                    .endpoint("https://tylerlockett.blob.core.windows.net/")
+                    .endpoint(endpoint)
                     .credential(defaultCredential)
                     .buildClient();
         }

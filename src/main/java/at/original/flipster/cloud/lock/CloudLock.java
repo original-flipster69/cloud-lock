@@ -8,17 +8,15 @@ import java.util.Objects;
 public final class CloudLock {
 
     private final Vendor vendor;
-    private final String bucketName;
-    private final String lockFile;
+    private final Config config;
 
-    public CloudLock(final Vendor vendor, final String bucketName, final String lockFile) {
+    public CloudLock(final Vendor vendor, final Config config) {
         this.vendor = Objects.requireNonNull(vendor);
-        this.bucketName = Objects.requireNonNull(bucketName);
-        this.lockFile = Objects.requireNonNull(lockFile);
+        this.config = Objects.requireNonNull(config);
     }
 
     public void doIfLeader(final Runnable action) {
-        StorageLock storageLock = new StorageLock(new StorageFactory(bucketName, lockFile).storage(vendor));
+        StorageLock storageLock = new StorageLock(new StorageFactory(config).storage(vendor));
         boolean haveLock = storageLock.acquireLock();
         if (!haveLock) {
             return;
