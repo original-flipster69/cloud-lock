@@ -13,12 +13,12 @@ public final class StorageFactory {
         this.lockFile = Objects.requireNonNull(lockFile);
     }
 
-    public Storage storage(final Vendor vendor) {
+    public CloudStorage storage(final Vendor vendor) {
         switch (vendor) {
             case GCP:
                 return new GoogleCloudStorage(bucketName, lockFile);
             case AZURE:
-                return new AzureBlobStorage(bucketName, lockFile);
+                return new AzureBlobStorage(bucketName.replaceAll("-", ""), lockFile);
         }
         throw new IllegalArgumentException("no storage implementation found for vendor = " + vendor);
     }

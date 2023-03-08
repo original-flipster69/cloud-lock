@@ -1,6 +1,8 @@
 package at.original.flipster.cloud.lock;
 
-import at.original.flipster.cloud.lock.storage.Storage;
+import at.original.flipster.cloud.lock.storage.CloudStorage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -10,12 +12,14 @@ import static java.time.temporal.ChronoUnit.SECONDS;
 
 final class StorageLock {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(StorageLock.class);
+
     private static final long LIFETIME_MINUTES = 1L;
     private static final long HEARTBEAT_SECONDS = 5L;
 
-    private final Storage providerLock;
+    private final CloudStorage providerLock;
 
-    StorageLock(final Storage cloudLock) {
+    StorageLock(final CloudStorage cloudLock) {
         this.providerLock = Objects.requireNonNull(cloudLock);
     }
 
@@ -23,9 +27,10 @@ final class StorageLock {
         if (!providerLock.lockFileExists()) {
             var gotLock = providerLock.lock();
             if (!gotLock) {
+                LOGGER.info("failed acquiring lock");
                 return false;
             }
-            System.out.println("acquired lock");
+            LOGGER.info("successfully acquired lock");
             return true;
         }
 
@@ -37,31 +42,33 @@ final class StorageLock {
             providerLock.deleteLock();
             boolean gotLock = providerLock.lock();
             if (!gotLock) {
+                LOGGER.info("failed acquiring lock");
                 return false;
             }
-            System.out.println("acquired lock");
+            LOGGER.info("successfully acquired lock");
             return true;
         }
+        LOGGER.info("failed acquiring lock");
         return false;
     }
 
     void releaseLock() {
-        if(!providerLock.hasLock()) {
+        if (!providerLock.hasLock()) {
             //FIXME oder fehler?
             return;
         }
         LocalDateTime lockTime = LocalDateTime.parse(providerLock.getLockContent());
-        if(!LocalDateTime.now().isAfter(lockTime.plus(HEARTBEAT_SECONDS, SECONDS))) {
-            System.out.println("waiting...");
+        if (!LocalDateTime.now().isAfter(lockTime.plus(HEARTBEAT_SECONDS, SECONDS))) {
+            LOGGER.info("waiting minimum lock hold duration until releasing lock again...");
             try {
                 //FIXME schedule the release instead?
                 Thread.sleep(HEARTBEAT_SECONDS * 1000);
-            } catch(Throwable t) {
+            } catch (Throwable t) {
                 //
             }
         }
         providerLock.deleteLock();
-        System.out.println("released lock");
+        LOGGER.info("lock released");
         providerLock.unlock();
     }
 }

@@ -17,7 +17,7 @@ public final class CloudLock {
         this.lockFile = Objects.requireNonNull(lockFile);
     }
 
-    public void doOnlyAsLeader(final Runnable action) {
+    public void doIfLeader(final Runnable action) {
         StorageLock storageLock = new StorageLock(new StorageFactory(bucketName, lockFile).storage(vendor));
         boolean haveLock = storageLock.acquireLock();
         if (!haveLock) {

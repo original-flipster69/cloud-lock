@@ -1,20 +1,29 @@
 package at.original.flipster.cloud.lock.storage;
 
 
-import com.google.cloud.storage.*;
+import com.google.cloud.storage.Blob;
+import com.google.cloud.storage.BlobId;
+import com.google.cloud.storage.Bucket;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageException;
+import com.google.cloud.storage.StorageOptions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-final class GoogleCloudStorage implements Storage {
+final class GoogleCloudStorage implements CloudStorage {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(GoogleCloudStorage.class);
 
     private final String bucketName;
     private final String lockFile;
 
     private Lock<BlobId> lock = null;
 
-    private com.google.cloud.storage.Storage storage;
+    private Storage storage;
     private Bucket bucket;
     private Blob blob;
 
@@ -34,6 +43,7 @@ final class GoogleCloudStorage implements Storage {
             Blob blob = getBucket().create(lockFile, LocalDateTime.now().toString().getBytes(StandardCharsets.UTF_8), Bucket.BlobTargetOption.doesNotExist());
             lock = new Lock<>(blob.getBlobId(), LocalDateTime.now());
         } catch (StorageException se) {
+            LOGGER.debug("failed to acquire lock - lock file already exists");
             return false;
         }
         return true;

@@ -1,6 +1,6 @@
 package at.original.flipster.cloud.lock.storage;
 
-public interface Storage {
+public interface CloudStorage {
     boolean lockFileExists();
 
     boolean lock();

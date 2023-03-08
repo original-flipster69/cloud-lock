@@ -8,11 +8,15 @@ import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobServiceClient;
 import com.azure.storage.blob.BlobServiceClientBuilder;
 import com.azure.storage.blob.models.BlobStorageException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-class AzureBlobStorage implements Storage {
+final class AzureBlobStorage implements CloudStorage {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AzureBlobStorage.class);
 
     private final String containerName;
     private final String lockFile;
@@ -32,6 +36,7 @@ class AzureBlobStorage implements Storage {
     private BlobServiceClient getServiceClient() {
         if (serviceClient == null) {
             serviceClient = new BlobServiceClientBuilder()
+                    //FIXME endpoint
                     .endpoint("https://tylerlockett.blob.core.windows.net/")
                     .credential(defaultCredential)
                     .buildClient();
@@ -62,10 +67,11 @@ class AzureBlobStorage implements Storage {
     public boolean lock() {
         try {
             getBlobClient().upload(BinaryData.fromString(LocalDateTime.now().toString()), false);
-            lock = new Lock<>(null, LocalDateTime.now());
         } catch (BlobStorageException bse) {
+            LOGGER.debug("failed to acquire lock - lock file already exists");
             return false;
         }
+        lock = new Lock<>(null, LocalDateTime.now());
         return true;
     }
 
