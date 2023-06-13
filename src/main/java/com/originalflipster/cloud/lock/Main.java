@@ -1,6 +1,6 @@
-package at.original.flipster.cloud.lock;
+package com.originalflipster.cloud.lock;
 
-import at.original.flipster.cloud.lock.storage.Vendor;
+import com.originalflipster.cloud.lock.storage.Vendor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

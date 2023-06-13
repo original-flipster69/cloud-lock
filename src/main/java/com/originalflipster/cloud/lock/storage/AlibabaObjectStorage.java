@@ -1,4 +1,4 @@
-package at.original.flipster.cloud.lock.storage;
+package com.originalflipster.cloud.lock.storage;
 
 import com.aliyun.oss.ClientException;
 import com.aliyun.oss.OSS;

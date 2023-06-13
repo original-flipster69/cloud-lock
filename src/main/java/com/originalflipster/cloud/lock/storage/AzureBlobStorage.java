@@ -1,4 +1,4 @@
-package at.original.flipster.cloud.lock.storage;
+package com.originalflipster.cloud.lock.storage;
 
 import com.azure.core.util.BinaryData;
 import com.azure.identity.DefaultAzureCredential;

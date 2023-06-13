@@ -1,6 +1,6 @@
-package at.original.flipster.cloud.lock.storage;
+package com.originalflipster.cloud.lock.storage;
 
-import at.original.flipster.cloud.lock.Config;
+import com.originalflipster.cloud.lock.Config;
 
 import java.util.Objects;
 
