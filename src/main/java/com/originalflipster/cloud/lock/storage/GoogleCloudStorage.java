@@ -3,6 +3,7 @@ package com.originalflipster.cloud.lock.storage;
 
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobId;
+import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageException;
@@ -21,10 +22,9 @@ final class GoogleCloudStorage implements CloudStorage {
     private final String bucketName;
     private final String lockFile;
 
-    private Lock<BlobId> lock = null;
+    private boolean lock = false;
 
     private Storage storage;
-    private Bucket bucket;
     private Blob blob;
 
     GoogleCloudStorage(final String bucketName, final String lockFile) {
@@ -40,8 +40,8 @@ final class GoogleCloudStorage implements CloudStorage {
     @Override
     public boolean lock() {
         try {
-            Blob blob = getBucket().create(lockFile, LocalDateTime.now().toString().getBytes(StandardCharsets.UTF_8), Bucket.BlobTargetOption.doesNotExist());
-            lock = new Lock<>(blob.getBlobId(), LocalDateTime.now());
+            getStorage().create(BlobInfo.newBuilder(bucketName, lockFile).build(), LocalDateTime.now().toString().getBytes(StandardCharsets.UTF_8), Storage.BlobTargetOption.doesNotExist());
+            lock = true;
         } catch (StorageException se) {
             LOGGER.debug("failed to acquire lock - lock file already exists");
             return false;
@@ -49,16 +49,9 @@ final class GoogleCloudStorage implements CloudStorage {
         return true;
     }
 
-    private Bucket getBucket() {
-        if (bucket == null) {
-            bucket = getStorage().get(bucketName);
-        }
-        return bucket;
-    }
-
     private Blob getBlob() {
         if (blob == null) {
-            blob = getBucket().get(lockFile);
+            blob = getStorage().get(bucketName, lockFile);
         }
         return blob;
     }
@@ -77,13 +70,13 @@ final class GoogleCloudStorage implements CloudStorage {
 
     @Override
     public boolean hasLock() {
-        return lock != null;
+        return lock;
     }
 
     @Override
     public void deleteLock() {
         if (hasLock()) {
-            getStorage().delete(lock.blob());
+            getBlob().delete();
             return;
         }
         getBlob().delete();
@@ -91,6 +84,6 @@ final class GoogleCloudStorage implements CloudStorage {
 
     @Override
     public void unlock() {
-        lock = null;
+        lock = false;
     }
 }
