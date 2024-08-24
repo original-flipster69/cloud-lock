@@ -1,6 +1,6 @@
 # cloud-lock
 
-<img align="right" width="256px" src="https://github.com/original-flipster69/cloud-lock/blob/9c50c4b458c3e433f13b88e06436d8d2ab19cb3e/logo.webp">
+<img align="right" width="192px" src="https://github.com/original-flipster69/cloud-lock/blob/9c50c4b458c3e433f13b88e06436d8d2ab19cb3e/logo.webp">
 
 ![GitHub License](https://img.shields.io/github/license/original-flipster69/cloud-lock)
 ![Maven Central Version](https://img.shields.io/maven-central/v/com.originalflipster/cloud-lock)
