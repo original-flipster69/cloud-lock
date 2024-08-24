@@ -1,6 +1,6 @@
 # cloud-lock
 
-<img align="right" width="159px" src="https://raw.githubusercontent.com/gin-gonic/logo/master/color.png">
+<img align="right" width="159px" src="https://raw.githubusercontent.com/original-flipster69/cloud-lock/cloud-lock-logo.webp">
 
 ![GitHub License](https://img.shields.io/github/license/original-flipster69/cloud-lock)
 
