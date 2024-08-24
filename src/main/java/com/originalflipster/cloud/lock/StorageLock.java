@@ -12,7 +12,7 @@ import static java.time.temporal.ChronoUnit.SECONDS;
 
 final class StorageLock {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(StorageLock.class);
+    private static final Logger LOG = LoggerFactory.getLogger(StorageLock.class);
 
     private static final long LIFETIME_MINUTES = 1L;
     private static final long HEARTBEAT_SECONDS = 5L;
@@ -27,10 +27,10 @@ final class StorageLock {
         if (!providerLock.lockFileExists()) {
             var gotLock = providerLock.lock();
             if (!gotLock) {
-                LOGGER.info("failed acquiring lock");
+                LOG.info("failed acquiring lock");
                 return false;
             }
-            LOGGER.info("successfully acquired lock");
+            LOG.info("successfully acquired lock");
             return true;
         }
 
@@ -42,24 +42,24 @@ final class StorageLock {
             providerLock.deleteLock();
             boolean gotLock = providerLock.lock();
             if (!gotLock) {
-                LOGGER.info("failed acquiring lock");
+                LOG.info("failed acquiring lock");
                 return false;
             }
-            LOGGER.info("successfully acquired lock");
+            LOG.info("successfully acquired lock");
             return true;
         }
-        LOGGER.info("failed acquiring lock");
+        LOG.info("failed acquiring lock");
         return false;
     }
 
     void releaseLock() {
         if (!providerLock.hasLock()) {
-            //FIXME oder fehler?
+            LOG.warn("trying to release lock, but no lock present");
             return;
         }
         LocalDateTime lockTime = LocalDateTime.parse(providerLock.getLockContent());
         if (!LocalDateTime.now().isAfter(lockTime.plus(HEARTBEAT_SECONDS, SECONDS))) {
-            LOGGER.info("waiting minimum lock hold duration until releasing lock again...");
+            LOG.info("waiting minimum lock hold duration until releasing lock again...");
             try {
                 //FIXME schedule the release instead?
                 Thread.sleep(HEARTBEAT_SECONDS * 1000);
@@ -68,7 +68,7 @@ final class StorageLock {
             }
         }
         providerLock.deleteLock();
-        LOGGER.info("lock released");
+        LOG.info("lock released");
         providerLock.unlock();
     }
 }

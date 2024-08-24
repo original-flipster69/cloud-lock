@@ -16,7 +16,7 @@ import java.util.Objects;
 
 final class AzureBlobStorage implements CloudStorage {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AzureBlobStorage.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AzureBlobStorage.class);
 
     private final String containerName;
     private final String lockFile;
@@ -69,7 +69,7 @@ final class AzureBlobStorage implements CloudStorage {
         try {
             getBlobClient().upload(BinaryData.fromString(LocalDateTime.now().toString()), false);
         } catch (BlobStorageException bse) {
-            LOGGER.debug("failed to acquire lock - lock file already exists");
+            LOG.debug("failed to acquire lock - lock file already exists");
             return false;
         }
         lock = new Lock<>(null, LocalDateTime.now());

@@ -15,11 +15,11 @@ public final class StorageFactory {
     public CloudStorage storage(final Vendor vendor) {
         switch (vendor) {
             case GCP:
-                return new GoogleCloudStorage(config.bucketName(), config.lockFile());
+                return new GoogleCloudStorage(config.getBucketName(), config.getLockFile());
             case AZURE:
-                return new AzureBlobStorage(config.bucketName().replaceAll("-", ""), config.lockFile(), config.endpoint());
+                return new AzureBlobStorage(config.getBucketName().replaceAll("-", ""), config.getLockFile(), config.getEndpoint());
             case ALIBABA:
-                return new AlibabaObjectStorage(config.bucketName(), config.lockFile(), config.endpoint(), config.accessId(), config.accessKey());
+                return new AlibabaObjectStorage(config.getBucketName(), config.getLockFile(), config.getEndpoint(), config.getAccessId(), config.getAccessKey());
         }
         throw new IllegalArgumentException("no storage implementation found for vendor = " + vendor);
     }

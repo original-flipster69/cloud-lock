@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 
 final class AlibabaObjectStorage implements CloudStorage {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AlibabaObjectStorage.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AlibabaObjectStorage.class);
 
     private final String bucketName;
     private final String lockFile;
@@ -56,10 +56,10 @@ final class AlibabaObjectStorage implements CloudStorage {
             putObjectRequest.setMetadata(metadata);
             ossClient.putObject(putObjectRequest);
         } catch (OSSException oe) {
-            LOGGER.debug("failed to acquire lock - lock file already exists");
+            LOG.debug("failed to acquire lock - lock file already exists");
             return false;
         } catch (ClientException ce) {
-            LOGGER.error("failed to send putobjectrequest", ce);
+            LOG.error("failed to send putobjectrequest", ce);
             return false;
         }
         lock = true;
@@ -71,7 +71,7 @@ final class AlibabaObjectStorage implements CloudStorage {
         try {
             return new String(getClient().getObject(bucketName, lockFile).getObjectContent().readAllBytes(), StandardCharsets.UTF_8);
         } catch (IOException e) {
-            LOGGER.error("failed reading content from lock file", e);
+            LOG.error("failed reading content from lock file", e);
             throw new RuntimeException(e);
         }
     }
