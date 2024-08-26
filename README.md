@@ -23,9 +23,9 @@ Add the following dependency to your project:
 - Maven
     ```xml
   <dependency>
-    <groupId>com.originalflipster</groupId>
-    <artifactId>cloud-lock</artifactId>
-    <version>0.1.0</version>
+        <groupId>com.originalflipster</groupId>
+        <artifactId>cloud-lock</artifactId>
+        <version>0.0.7</version>
   </dependency>
   ```
 - Gradle

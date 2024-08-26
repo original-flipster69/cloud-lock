@@ -2,6 +2,7 @@ package com.originalflipster.cloud.lock.storage;
 
 import com.aliyun.oss.ClientException;
 import com.aliyun.oss.OSS;
+import com.aliyun.oss.OSSClient;
 import com.aliyun.oss.OSSClientBuilder;
 import com.aliyun.oss.OSSException;
 import com.aliyun.oss.model.ObjectMetadata;
@@ -33,6 +34,15 @@ final class AlibabaObjectStorage implements CloudStorage {
         this.endpoint = endpoint;
         this.accessKeyId = accessKeyId;
         this.accessKeySecret = accessKeySecret;
+    }
+
+    AlibabaObjectStorage(final String bucketName, final String lockFile, final String endpoint, final OSSClient ossClient) {
+        this.bucketName = bucketName;
+        this.lockFile = lockFile;
+        this.endpoint = endpoint;
+        this.ossClient = ossClient;
+        this.accessKeyId = "";
+        this.accessKeySecret = "";
     }
 
     private OSS getClient() {

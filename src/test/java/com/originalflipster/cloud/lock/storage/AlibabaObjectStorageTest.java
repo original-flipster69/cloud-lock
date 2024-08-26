@@ -1,6 +1,6 @@
 package com.originalflipster.cloud.lock.storage;
 
-import com.aliyun.oss.OSS;
+import com.aliyun.oss.OSSClient;
 import com.aliyun.oss.OSSException;
 import com.aliyun.oss.model.GetObjectRequest;
 import com.aliyun.oss.model.OSSObject;
@@ -25,13 +25,13 @@ class AlibabaObjectStorageTest {
     private static final String BUCKET_NAME = "test-bucket";
     private static final String LOCK_FILE = "lock-file";
 
-    private OSS ossClient;
+    private OSSClient ossClient;
     private AlibabaObjectStorage alibabaObjectStorage;
 
     @BeforeEach
     void setUp() {
-        ossClient = mock(OSS.class);
-        //alibabaObjectStorage = new AlibabaObjectStorage(BUCKET_NAME, LOCK_FILE, () -> ossClient);
+        ossClient = mock(OSSClient.class);
+        alibabaObjectStorage = new AlibabaObjectStorage(BUCKET_NAME, LOCK_FILE, "",  ossClient);
     }
 
     @Test

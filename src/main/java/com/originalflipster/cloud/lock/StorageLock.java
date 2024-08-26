@@ -17,15 +17,15 @@ final class StorageLock {
     private static final long LIFETIME_MINUTES = 1L;
     private static final long HEARTBEAT_SECONDS = 5L;
 
-    private final CloudStorage providerLock;
+    private final CloudStorage storage;
 
-    StorageLock(final CloudStorage cloudLock) {
-        this.providerLock = Objects.requireNonNull(cloudLock);
+    StorageLock(final CloudStorage storage) {
+        this.storage = Objects.requireNonNull(storage);
     }
 
     boolean acquireLock() {
-        if (!providerLock.lockFileExists()) {
-            var gotLock = providerLock.lock();
+        if (!storage.lockFileExists()) {
+            var gotLock = storage.lock();
             if (!gotLock) {
                 LOG.info("failed acquiring lock");
                 return false;
@@ -34,13 +34,13 @@ final class StorageLock {
             return true;
         }
 
-        LocalDateTime lockTime = LocalDateTime.parse(providerLock.getLockContent());
+        LocalDateTime lockTime = LocalDateTime.parse(storage.getLockContent());
         var minutesBetween = MINUTES.between(lockTime, LocalDateTime.now());
 
         if (minutesBetween > LIFETIME_MINUTES) {
             //FIXME check necessity
-            providerLock.deleteLock();
-            boolean gotLock = providerLock.lock();
+            storage.deleteLock();
+            boolean gotLock = storage.lock();
             if (!gotLock) {
                 LOG.info("failed acquiring lock");
                 return false;
@@ -53,11 +53,11 @@ final class StorageLock {
     }
 
     void releaseLock() {
-        if (!providerLock.hasLock()) {
+        if (!storage.hasLock()) {
             LOG.warn("trying to release lock, but no lock present");
             return;
         }
-        LocalDateTime lockTime = LocalDateTime.parse(providerLock.getLockContent());
+        LocalDateTime lockTime = LocalDateTime.parse(storage.getLockContent());
         if (!LocalDateTime.now().isAfter(lockTime.plus(HEARTBEAT_SECONDS, SECONDS))) {
             LOG.info("waiting minimum lock hold duration until releasing lock again...");
             try {
@@ -67,8 +67,8 @@ final class StorageLock {
                 //
             }
         }
-        providerLock.deleteLock();
+        storage.deleteLock();
         LOG.info("lock released");
-        providerLock.unlock();
+        storage.unlock();
     }
 }
