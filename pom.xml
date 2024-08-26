@@ -6,11 +6,11 @@
 
     <groupId>com.originalflipster</groupId>
     <artifactId>cloud-lock</artifactId>
-    <version>0.0.7</version>
+    <version>0.0.8</version>
 
     <name>cloud-lock</name>
     <description>cloud-lock provides distributed locking (for leader election) via cloud storage</description>
-    <url>https://github.com/original-flipster69/cloud-lock</url>
+    <url>https://originalflipster.com/docs/distributed-locking-with-cloud-lock/</url>
 
     <licenses>
         <license>

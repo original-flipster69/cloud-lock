@@ -33,12 +33,12 @@ Add the following dependency to your project:
   <dependency>
         <groupId>com.originalflipster</groupId>
         <artifactId>cloud-lock</artifactId>
-        <version>0.0.7</version>
+        <version>0.0.8</version>
   </dependency>
   ```
 - Gradle
   ```gradle
-  implementation 'com.originalflipster:cloud-lock:0.0.7'
+  implementation 'com.originalflipster:cloud-lock:0.0.8'
   ```
 
 ## Documentation
