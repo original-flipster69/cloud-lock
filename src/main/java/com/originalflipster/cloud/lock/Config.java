@@ -16,6 +16,22 @@ public final class Config {
         this.accessKey = accessKey;
     }
 
+    public Config(final String bucketName, final String lockFile) {
+        this.bucketName = bucketName;
+        this.lockFile = lockFile;
+        this.endpoint = null;
+        this.accessId = null;
+        this.accessKey = null;
+    }
+
+    public Config(final String bucketName, final String lockFile, final String endpoint) {
+        this.bucketName = bucketName;
+        this.lockFile = lockFile;
+        this.endpoint = endpoint;
+        this.accessId = null;
+        this.accessKey = null;
+    }
+
     public String getBucketName() {
         return bucketName;
     }

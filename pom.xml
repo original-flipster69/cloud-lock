@@ -6,10 +6,10 @@
 
     <groupId>com.originalflipster</groupId>
     <artifactId>cloud-lock</artifactId>
-    <version>0.0.6</version>
+    <version>0.0.7</version>
 
-    <name>Cloud Lock</name>
-    <description>Small project that enables leader election via a lock for several cloud providers.</description>
+    <name>cloud-lock</name>
+    <description>cloud-lock provides distributed locking (for leader election) via cloud storage</description>
     <url>https://github.com/original-flipster69/cloud-lock</url>
 
     <licenses>
@@ -23,9 +23,9 @@
     <developers>
         <developer>
             <id>original.flipster</id>
-            <name>Original Flipster</name>
+            <name>original.flipster</name>
             <email>code@originalflipster.com</email>
-            <organization>Original Flipster</organization>
+            <organization>original.flipster</organization>
             <organizationUrl>https://www.originalflipster.com/</organizationUrl>
             <roles>
                 <role>developer</role>
@@ -72,12 +72,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.google.cloud</groupId>
-            <artifactId>google-cloud-nio</artifactId>
-            <version>0.127.21</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>com.azure</groupId>
             <artifactId>azure-identity</artifactId>
             <version>1.13.2</version>
@@ -99,7 +93,6 @@
             <artifactId>logback-classic</artifactId>
             <version>1.5.7</version>
         </dependency>
-
 
         <dependency>
             <groupId>org.junit.jupiter</groupId>

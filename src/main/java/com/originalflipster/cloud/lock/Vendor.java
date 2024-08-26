@@ -1,4 +1,4 @@
-package com.originalflipster.cloud.lock.storage;
+package com.originalflipster.cloud.lock;
 
 public enum Vendor {
     GCP,

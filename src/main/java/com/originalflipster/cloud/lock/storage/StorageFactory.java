@@ -1,18 +1,21 @@
 package com.originalflipster.cloud.lock.storage;
 
 import com.originalflipster.cloud.lock.Config;
+import com.originalflipster.cloud.lock.Vendor;
 
 import java.util.Objects;
 
 public final class StorageFactory {
 
     private final Config config;
+    private final Vendor vendor;
 
-    public StorageFactory(final Config config) {
+    public StorageFactory(final Vendor vendor, final Config config) {
+        this.vendor = Objects.requireNonNull(vendor);
         this.config = Objects.requireNonNull(config);
     }
 
-    public CloudStorage storage(final Vendor vendor) {
+    public CloudStorage storage() {
         switch (vendor) {
             case GCP:
                 return new GoogleCloudStorage(config.getBucketName(), config.getLockFile());
