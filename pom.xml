@@ -6,7 +6,7 @@
 
     <groupId>com.originalflipster</groupId>
     <artifactId>cloud-lock</artifactId>
-    <version>0.0.8</version>
+    <version>0.0.9</version>
 
     <name>cloud-lock</name>
     <description>cloud-lock provides distributed locking (for leader election) via cloud storage</description>
@@ -74,7 +74,7 @@
         <dependency>
             <groupId>com.azure</groupId>
             <artifactId>azure-identity</artifactId>
-            <version>1.13.2</version>
+            <version>1.15.4</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
