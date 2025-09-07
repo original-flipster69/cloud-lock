@@ -1,4 +1,4 @@
-# cloud-lock
+# cloud-lock ☁️🔒
 
 <img align="right" width="192px" src="https://github.com/original-flipster69/cloud-lock/blob/9c50c4b458c3e433f13b88e06436d8d2ab19cb3e/logo.webp">
 
